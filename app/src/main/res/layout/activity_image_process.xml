@@ -13,7 +13,6 @@
         app:leftBtnIcon="@drawable/back"
         app:rightBtnIcon="@drawable/next"
         app:titleTxt="Thank You +2pt"
-
         app:leftBtnTxt="return"
          />
 
