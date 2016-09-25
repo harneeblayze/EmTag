@@ -4,6 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
+
     android:orientation="vertical" >
 
     <com.customview.CommonTitleBar
@@ -12,6 +13,7 @@
         app:leftBtnIcon="@drawable/back"
         app:rightBtnIcon="@drawable/next"
         app:titleTxt="Thank You +2pt"
+
         app:leftBtnTxt="return"
          />
 
@@ -25,18 +27,19 @@
 
         <RelativeLayout
             android:id="@+id/drawing_view_container"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="500dp"
+            android:layout_height="1200dp"
             android:background="#00ffffff"
             android:orientation="vertical" >
 
-            <jp.co.cyberagent.android.gpuimage.GPUImageView
-                android:id="@+id/gpuimage"
-                android:layout_width="fill_parent"
+            <ImageView
+                android:layout_width="384dp"
+                android:layout_height="680dp"
+                android:layout_alignParentLeft="true"
+                android:background="@color/transparent"
+                android:gravity="center"
 
-                android:background="#00ffffff"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center" />
+                android:src="@drawable/thanks" />
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -73,18 +76,12 @@
     <LinearLayout
         android:id="@+id/btn_area"
         android:layout_width="fill_parent"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
         android:background="@color/transparent"
         android:orientation="horizontal"
+        android:visibility="invisible"
      >
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_alignParentLeft="true"
-            android:background="@color/transparent"
-            android:gravity="center"
 
-            android:src="@drawable/more" />
 
 
         <TextView

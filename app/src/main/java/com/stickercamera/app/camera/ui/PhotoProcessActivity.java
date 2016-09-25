@@ -68,8 +68,8 @@ import jp.co.cyberagent.android.gpuimage.GPUImageView;
 public class PhotoProcessActivity extends CameraBaseActivity {
 
     //滤镜图片
-    @InjectView(R.id.gpuimage)
-    GPUImageView mGPUImageView;
+    //@InjectView(R.id.gpuimage)
+    //GPUImageView mGPUImageView;
     //绘图区域
     @InjectView(R.id.drawing_view_container)
     ViewGroup drawArea;
@@ -117,7 +117,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
             @Override
             public void callback(Bitmap result) {
                 currentBitmap = result;
-                mGPUImageView.setImage(currentBitmap);
+                //mGPUImageView.setImage(currentBitmap);
             }
         });
 
@@ -166,7 +166,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         labelSelector.hide();
 
         //初始化滤镜图片
-        mGPUImageView.setLayoutParams(rparams);
+        //mGPUImageView.setLayoutParams(rparams);
 
 
         //初始化空白标签
@@ -252,12 +252,12 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(newBitmap);
         RectF dst = new RectF(0, 0, mImageView.getWidth(), mImageView.getHeight());
-        try {
-            cv.drawBitmap(mGPUImageView.capture(), null, dst, null);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            cv.drawBitmap(currentBitmap, null, dst, null);
-        }
+//        try {
+//            cv.drawBitmap(mGPUImageView.capture(), null, dst, null);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//            cv.drawBitmap(currentBitmap, null, dst, null);
+//        }
         //加贴纸水印
         EffectUtil.applyOnSave(cv, mImageView);
 
@@ -403,7 +403,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                     adapter.setSelectFilter(arg2);
                     GPUImageFilter filter = GPUImageFilterTools.createFilterForType(
                             PhotoProcessActivity.this, filters.get(arg2).getType());
-                    mGPUImageView.setFilter(filter);
+                    //mGPUImageView.setFilter(filter);
                     GPUImageFilterTools.FilterAdjuster mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(filter);
                     //可调节颜色的滤镜
                     if (mFilterAdjuster.canAdjust()) {
