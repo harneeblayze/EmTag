@@ -172,8 +172,9 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
             @Override
             public void callback(Bitmap result) {
-                System.out.println("bling");
+
                 smallImageBackgroud = result;
+
                 final MediaPlayer mp = new MediaPlayer();
                 if(mp.isPlaying())
                 {
@@ -192,15 +193,8 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                //savePicture();
-                final Bitmap newBitmap = Bitmap.createBitmap(mImageView.getWidth(), mImageView.getHeight(),
-                        Bitmap.Config.ARGB_8888);
-                String picName = TimeUtils.dtFormat(new Date(), "yyyyMMddHHmmss")+".jpg";
 
-
-
-
-                //mGPS.latitudeAndLongtitude();
+                String picName = TimeUtils.dtFormat(new Date(), "yyyyMMddHHmmss");
 
                 try {
 
@@ -215,8 +209,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                         reqEntity.addPart("longitude", new StringBody(longitude_string));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        toast("\n" +
-                            "Error: "+e.toString(), Toast.LENGTH_LONG);
+                        toast("\n" +"Error: "+e.toString(), Toast.LENGTH_LONG);
                     }
                     TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
                     String uuid = tManager.getDeviceId();
@@ -233,15 +226,11 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
                         reqEntity.addPart("user_firstName", new StringBody("EmTag"));
                         reqEntity.addPart("user_lastName", new StringBody("App"));
-
                         reqEntity.addPart("uuid", new StringBody(uuid));
-
                         reqEntity.addPart("bounty_price", new StringBody("1"));
                                 String fileName = null;
                                 try {
-
-                                    fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, newBitmap);
-
+                                    fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, smallImageBackgroud);
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -290,20 +279,9 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = settings.edit();
-
-                //LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-                //View convertView = layoutInflater.inflate(R.layout.item_bottom_filter, null);
-                //TextView tv = (TextView) findViewById(R.id.xp);
-
-                //CharSequence xp = tv.getText().toString();
-                //Integer number = Integer.parseInt(xp.toString());
                 Integer number = Integer.parseInt(settings.getString("xp", "2"));
-
                 editor.putString("xp", Integer.toString(number+2));
                 editor.apply();
-                //tv.setText(Integer.toString(number+2));
-
-
             }
         });
 
