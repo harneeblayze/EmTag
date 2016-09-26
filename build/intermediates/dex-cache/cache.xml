@@ -227,6 +227,15 @@
         <dex dex="C:\files\EmTag\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.rengwuxian.materialedittext-library-2.1.3_8d6122c27f8d2384d6f2bdbf81f366bf03e977b8\classes.dex" />
     </item>
     <item
+        is-multidex="true"
+        jar="C:\files\EmTag\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="22.0.1"
+        sha1="20144d408e5aa5c481c25be9e2acdbb085302cad">
+        <dex dex="C:\files\EmTag\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_de762ab9d7a9c88f4abaf3dd5f757c7df5c915e1\classes.dex" />
+    </item>
+    <item
         is-multidex="false"
         jar="C:\files\EmTag\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\22.2.0\jars\classes.jar"
         jumboMode="false"
@@ -243,15 +252,6 @@
         revision="22.0.1"
         sha1="8c6ebb7d087d1a30bf84356bd2aecf85309fc024">
         <dex dex="C:\files\EmTag\app\build\intermediates\pre-dexed\release\com.melnykov-floatingactionbutton-1.3.0_90b2c49f9a8e774898eb8b3e8c15b36cb5401169.jar" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\files\EmTag\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="22.0.1"
-        sha1="d55a8bfd95455972bf7a62197f560856239833d3">
-        <dex dex="C:\files\EmTag\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_de762ab9d7a9c88f4abaf3dd5f757c7df5c915e1\classes.dex" />
     </item>
     <item
         is-multidex="false"
