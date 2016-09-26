@@ -12,7 +12,8 @@
         style="@style/head_default"
         app:leftBtnIcon="@drawable/back"
         app:rightBtnIcon="@drawable/next"
-        app:titleTxt="Thank You +2pt"
+        android:layout_height="0dp"
+        app:titleTxt="Thank You +2xp"
         app:leftBtnTxt="return"
          />
 

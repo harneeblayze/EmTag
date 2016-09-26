@@ -206,6 +206,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                             HttpMultipartMode.BROWSER_COMPATIBLE);
 
                     try {
+                        gps.getLocation();
                         String latitude_string = Double.toString(gps.getLatitude());
                         String longitude_string = Double.toString(gps.getLongitude());
                         reqEntity.addPart("latitude", new StringBody(latitude_string));
