@@ -1,17 +1,26 @@
 package com.stickercamera.app.camera.ui;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +30,14 @@ import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.location.LocationListener;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.common.util.FileUtils;
 import com.common.util.ImageUtils;
@@ -46,8 +63,24 @@ import com.stickercamera.app.model.Addon;
 import com.stickercamera.app.model.FeedItem;
 import com.stickercamera.app.model.TagItem;
 import com.stickercamera.app.ui.EditTextActivity;
+import android.location.Location;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.entity.mime.MultipartEntity;
+
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +91,9 @@ import de.greenrobot.event.EventBus;
 import it.sephiroth.android.library.widget.HListView;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageView;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.R.attr.path;
 
 /**
  * 图片处理界面
@@ -99,8 +135,15 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
     private List<LabelView> labels = new ArrayList<LabelView>();
 
+
     //标签区域
     private View commonLabelArea;
+    protected LocationManager locationManager;
+
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+    // The minimum time between updates in milliseconds
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +154,8 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         initView();
         initEvent();
         initStickerToolBar();
+        GPSTracker gps = new GPSTracker(this);
+
 
 
         ImageUtils.asyncLoadImage(this, getIntent().getData(), new ImageUtils.LoadImageCallback() {
@@ -125,6 +170,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
             @Override
             public void callback(Bitmap result) {
+                System.out.println("bling");
                 smallImageBackgroud = result;
                 final MediaPlayer mp = new MediaPlayer();
                 if(mp.isPlaying())
@@ -144,10 +190,106 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                //savePicture();
+                final Bitmap newBitmap = Bitmap.createBitmap(mImageView.getWidth(), mImageView.getHeight(),
+                        Bitmap.Config.ARGB_8888);
+                String picName = TimeUtils.dtFormat(new Date(), "yyyyMMddHHmmss")+".jpg";
+
+
+
+
+                //mGPS.latitudeAndLongtitude();
+
+                try {
+
+                    MultipartEntity reqEntity = new MultipartEntity(
+                            HttpMultipartMode.BROWSER_COMPATIBLE);
+
+                    try {
+                        String latitude_string = Double.toString(gps.getLatitude());
+                        String longitude_string = Double.toString(gps.getLongitude());
+                        reqEntity.addPart("latitude", new StringBody(latitude_string));
+                        reqEntity.addPart("longitude", new StringBody(longitude_string));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        toast("\n" +
+                            "Error: "+e.toString(), Toast.LENGTH_LONG);
+                    }
+                    TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                    String uuid = tManager.getDeviceId();
+                    Long tsLong = System.currentTimeMillis()/1000;
+                    String ts = tsLong.toString();
+
+                    Thread thread = new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+
+                        reqEntity.addPart("user_firstName", new StringBody("EmTag"));
+                        reqEntity.addPart("user_lastName", new StringBody("App"));
+
+                        reqEntity.addPart("uuid", new StringBody(uuid));
+
+                        reqEntity.addPart("bounty_price", new StringBody("1"));
+                                String fileName = null;
+                                try {
+
+                                    fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, newBitmap);
+
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    toast("\n" +
+                                            "Image processing error，\n" +
+                                            "Please exit the camera and try again", Toast.LENGTH_LONG);
+                                }
+
+                        //File file = new File(Bitmap);
+                        //ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        File file = new File(fileName);
+                        reqEntity.addPart("image", new FileBody(file, "image/jpeg"));
+
+                        HttpClient httpClient = new DefaultHttpClient();
+                        HttpPost postRequest = new HttpPost(Utils.urlTagit);
+
+                        BasicHttpContext localContext = new BasicHttpContext();
+
+                        postRequest.setEntity(reqEntity);
+
+                        HttpResponse responses = httpClient.execute(postRequest,
+                                localContext);
+
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                                responses.getEntity().getContent(), "UTF-8"));
+
+                        String sResponse;
+                        String response = "";
+                        while ((sResponse = reader.readLine()) != null) {
+                            response = response + sResponse;
+                        }
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    thread.start();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
             }
         });
 
     }
+
     private void initView() {
         //添加贴纸水印的画布
         View overlay = LayoutInflater.from(PhotoProcessActivity.this).inflate(
@@ -269,7 +411,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showProgressDialog("图片处理中...");
+            showProgressDialog("Image Processing...");
         }
 
         @Override
@@ -281,9 +423,12 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 String picName = TimeUtils.dtFormat(new Date(), "yyyyMMddHHmmss");
                  fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, bitmap);
 
+
             } catch (Exception e) {
                 e.printStackTrace();
-                toast("图片处理错误，请退出相机并重试", Toast.LENGTH_LONG);
+                toast("\n" +
+                        "Image processing error，\n" +
+                        "Please exit the camera and try again", Toast.LENGTH_LONG);
             }
             return fileName;
         }
@@ -453,3 +598,4 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         }
     }
 }
+
