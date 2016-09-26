@@ -2,6 +2,7 @@ package com.stickercamera.app.camera.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.common.util.DistanceUtil;
@@ -128,6 +131,16 @@ public class CameraActivity extends CameraBaseActivity {
         surfaceView.setBackgroundColor(TRIM_MEMORY_BACKGROUND);
         surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
 
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = settings.edit();
+
+        //LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        //View convertView = layoutInflater.inflate(R.layout.item_bottom_filter, null);
+        TextView tv = (TextView) findViewById(R.id.xp);
+        tv.setText(settings.getString("xp", "2"));
+
+
+
         //设置相机界面,照片列表,以及拍照布局的高度(保证相机预览为正方形)
 //        ViewGroup.LayoutParams layout = cameraGrid.getLayoutParams();
 //        layout.height = App.getApp().getScreenWidth();
@@ -205,7 +218,7 @@ public class CameraActivity extends CameraBaseActivity {
         takePicture.setOnClickListener(v -> {
             try {
 
-                cameraInst.takePicture(null, null, new MyPictureCallback());
+                cameraInst.takePicture(null, null, new MyPictureCallback(7));
 
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -220,7 +233,7 @@ public class CameraActivity extends CameraBaseActivity {
         });
         takePicture1.setOnClickListener(v -> {
             try {
-                cameraInst.takePicture(null, null, new MyPictureCallback());
+                cameraInst.takePicture(null, null, new MyPictureCallback(10));
             } catch (Throwable t) {
                 t.printStackTrace();
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
@@ -233,7 +246,7 @@ public class CameraActivity extends CameraBaseActivity {
         });
         takePicture2.setOnClickListener(v -> {
             try {
-                cameraInst.takePicture(null, null, new MyPictureCallback());
+                cameraInst.takePicture(null, null, new MyPictureCallback(1));
             } catch (Throwable t) {
                 t.printStackTrace();
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
@@ -246,7 +259,7 @@ public class CameraActivity extends CameraBaseActivity {
         });
         takePicture3.setOnClickListener(v -> {
             try {
-                cameraInst.takePicture(null, null, new MyPictureCallback());
+                cameraInst.takePicture(null, null, new MyPictureCallback(2));
             } catch (Throwable t) {
                 t.printStackTrace();
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
@@ -259,7 +272,7 @@ public class CameraActivity extends CameraBaseActivity {
         });
         takePicture4.setOnClickListener(v -> {
             try {
-                cameraInst.takePicture(null, null, new MyPictureCallback());
+                cameraInst.takePicture(null, null, new MyPictureCallback(6));
             } catch (Throwable t) {
                 t.printStackTrace();
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
@@ -437,28 +450,29 @@ public class CameraActivity extends CameraBaseActivity {
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
     }
 
-    private final class MyPictureCallback implements Camera.PictureCallback {
+    private final class MyPictureCallback implements Camera.PictureCallback{
 
+        public MyPictureCallback(Integer type){}
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            final MediaPlayer mp = new MediaPlayer();
-            if(mp.isPlaying())
-            {
-                mp.stop();
-            }
-
-            try {
-                mp.reset();
-                AssetFileDescriptor afd;
-                afd = getAssets().openFd("thank-you.wav");
-                mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
-                mp.prepare();
-                mp.start();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            final MediaPlayer mp = new MediaPlayer();
+//            if(mp.isPlaying())
+//            {
+//                mp.stop();
+//            }
+//
+//            try {
+//                mp.reset();
+//                AssetFileDescriptor afd;
+//                afd = getAssets().openFd("thank-you.wav");
+//                mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+//                mp.prepare();
+//                mp.start();
+//            } catch (IllegalStateException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             bundle = new Bundle();
             bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换
             new SavePicTask(data).execute();

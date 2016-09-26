@@ -90,7 +90,26 @@
                 android:paddingLeft="30dp"
 
                 android:src="@drawable/logo" />
-
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:id="@+id/xp"
+                android:text="2"
+                android:paddingLeft="120dp"
+                android:textColor="#F56608"
+                android:textSize="40sp" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:text="XP"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="220dp"
+                android:textColor="#F56608"
+                android:textSize="40sp" />
             <ImageView
                 android:id="@+id/change"
                 android:layout_width="wrap_content"

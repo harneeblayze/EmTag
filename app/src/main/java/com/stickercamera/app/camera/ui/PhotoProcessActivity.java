@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -64,7 +65,7 @@ import com.stickercamera.app.model.FeedItem;
 import com.stickercamera.app.model.TagItem;
 import com.stickercamera.app.ui.EditTextActivity;
 import android.location.Location;
-
+import android.preference.PreferenceManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -155,6 +156,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         initEvent();
         initStickerToolBar();
         GPSTracker gps = new GPSTracker(this);
+        Context            mContext;
 
 
 
@@ -284,6 +286,22 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = settings.edit();
+
+                //LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+                //View convertView = layoutInflater.inflate(R.layout.item_bottom_filter, null);
+                //TextView tv = (TextView) findViewById(R.id.xp);
+
+                //CharSequence xp = tv.getText().toString();
+                //Integer number = Integer.parseInt(xp.toString());
+                Integer number = Integer.parseInt(settings.getString("xp", "2"));
+
+                editor.putString("xp", Integer.toString(number+2));
+                editor.apply();
+                //tv.setText(Integer.toString(number+2));
 
 
             }
