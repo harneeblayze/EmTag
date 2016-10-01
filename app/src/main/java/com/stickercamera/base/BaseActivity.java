@@ -158,4 +158,15 @@ public class BaseActivity extends AppCompatActivity implements ActivityResponsab
     public void dismissProgressDialog() {
         mActivityHelper.dismissProgressDialog();
     }
+    
+    /*
+        makes it to where pressing the back button does nothing while BaseActivity is active.
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
 }
