@@ -3,7 +3,6 @@ package com.stickercamera;
 import android.app.Application;
 import android.util.DisplayMetrics;
 
-import com.common.util.DataUtils;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;

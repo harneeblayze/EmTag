@@ -1,8 +1,8 @@
 package com.common.util;
 
-import java.util.Collection;
-
 import android.text.TextUtils;
+
+import java.util.Collection;
 
 /**
  * CollectionUtils

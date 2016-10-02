@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
-
 import com.github.skykai.stickercamera.R;
 import com.stickercamera.app.camera.CameraManager;
 import com.stickercamera.app.camera.adapter.GalleryAdapter;

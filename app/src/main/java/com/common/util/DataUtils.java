@@ -6,8 +6,6 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.stickercamera.App;
-import java.util.HashSet;
-import java.util.Set;
 
 public final class DataUtils {
 

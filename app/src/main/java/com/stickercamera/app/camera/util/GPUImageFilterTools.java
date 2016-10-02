@@ -22,6 +22,9 @@ import android.graphics.PointF;
 
 import com.github.skykai.stickercamera.R;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import jp.co.cyberagent.android.gpuimage.GPUImage3x3ConvolutionFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImage3x3TextureSamplingFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageAddBlendFilter;
@@ -94,9 +97,6 @@ import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageVignetteFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageWeakPixelInclusionFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageWhiteBalanceFilter;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class GPUImageFilterTools {
 
