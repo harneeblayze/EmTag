@@ -5,16 +5,13 @@ package com.stickercamera.app.camera.ui;
  */
 
 import android.app.Activity;
-
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.Menu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.skykai.stickercamera.R;

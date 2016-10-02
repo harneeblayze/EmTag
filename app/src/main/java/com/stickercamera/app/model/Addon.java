@@ -1,11 +1,5 @@
 package com.stickercamera.app.model;
 
-import com.alibaba.fastjson.JSON;
-import com.common.util.StringUtils;
-
-import java.util.List;
-
-
 /**
  * 本地简单使用,实际项目中与贴纸相关的属性可以添加到此类中
  */
