@@ -1,12 +1,12 @@
 package com.common.util;
 
-import java.util.List;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
+
+import java.util.List;
 
 /**
  * AppUtils

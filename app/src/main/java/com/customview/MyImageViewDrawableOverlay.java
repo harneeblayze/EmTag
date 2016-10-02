@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
-
 import com.customview.drawable.EditableDrawable;
 import com.customview.drawable.FeatherDrawable;
 import com.imagezoom.ImageViewTouch;
