@@ -160,10 +160,8 @@ public class BaseActivity extends AppCompatActivity implements ActivityResponsab
         makes it to where pressing the back button does nothing while BaseActivity is active.
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        if(keyCode == KeyEvent.KEYCODE_BACK){
-            return true;
-        }
-        return super.onKeyDown(keyCode,event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return keyCode == KeyEvent.KEYCODE_BACK || super.onKeyDown(keyCode, event);
     }
+
 }

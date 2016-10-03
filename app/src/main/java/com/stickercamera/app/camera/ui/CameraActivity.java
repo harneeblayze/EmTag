@@ -148,8 +148,8 @@ public class CameraActivity extends CameraBaseActivity {
 //        layout = takePhotoPanel.getLayoutParams();
 //        layout.height = DistanceUtil.getCameraPhotoAreaHeight();
 //        layout.height = 0;
-       // layout.height = App.getApp().getScreenHeight()
-       //         - App.getApp().getScreenWidth()
+        // layout.height = App.getApp().getScreenHeight()
+        //         - App.getApp().getScreenWidth()
         //        - DistanceUtil.getCameraPhotoAreaHeight();
 
         //添加系统相册内的图片
@@ -198,9 +198,7 @@ public class CameraActivity extends CameraBaseActivity {
                 mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
                 mp.prepare();
                 mp.start();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IllegalStateException | IOException e) {
                 e.printStackTrace();
             }
             //if (v instanceof ImageView && v.getTag() instanceof String) {
@@ -224,7 +222,7 @@ public class CameraActivity extends CameraBaseActivity {
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
                 try {
                     cameraInst.startPreview();
-                } catch (Throwable e) {
+                } catch (Throwable ignored) {
 
                 }
             }
@@ -238,7 +236,7 @@ public class CameraActivity extends CameraBaseActivity {
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
                 try {
                     cameraInst.startPreview();
-                } catch (Throwable e) {
+                } catch (Throwable ignored) {
 
                 }
             }
@@ -251,7 +249,7 @@ public class CameraActivity extends CameraBaseActivity {
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
                 try {
                     cameraInst.startPreview();
-                } catch (Throwable e) {
+                } catch (Throwable ignored) {
 
                 }
             }
@@ -264,7 +262,7 @@ public class CameraActivity extends CameraBaseActivity {
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
                 try {
                     cameraInst.startPreview();
-                } catch (Throwable e) {
+                } catch (Throwable ignored) {
 
                 }
             }
@@ -277,7 +275,7 @@ public class CameraActivity extends CameraBaseActivity {
                 toast("Capture Failed，Please try again！", Toast.LENGTH_LONG);
                 try {
                     cameraInst.startPreview();
-                } catch (Throwable e) {
+                } catch (Throwable ignored) {
 
                 }
             }
@@ -385,7 +383,7 @@ public class CameraActivity extends CameraBaseActivity {
         }
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        return FloatMath.sqrt(x * x + y * y);
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     //放大缩小
@@ -409,7 +407,6 @@ public class CameraActivity extends CameraBaseActivity {
             if (!params.isSmoothZoomSupported()) {
                 params.setZoom(curZoomValue);
                 cameraInst.setParameters(params);
-                return;
             } else {
                 cameraInst.startSmoothZoom(curZoomValue);
             }
@@ -508,8 +505,8 @@ public class CameraActivity extends CameraBaseActivity {
 
             if (StringUtils.isNotEmpty(result)) {
                 dismissProgressDialog();
-                    CameraManager.getInst().processPhotoItem(CameraActivity.this,
-                            new PhotoItem(result, System.currentTimeMillis()));
+                CameraManager.getInst().processPhotoItem(CameraActivity.this,
+                        new PhotoItem(result, System.currentTimeMillis()));
             } else {
                 toast("Failed pictures，Please try again later！", Toast.LENGTH_LONG);
             }
@@ -566,12 +563,9 @@ public class CameraActivity extends CameraBaseActivity {
                 if (cameraInst == null) {
                     return;
                 }
-                cameraInst.autoFocus(new Camera.AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(boolean success, Camera camera) {
-                        if (success) {
-                            initCamera();//实现相机的参数初始化
-                        }
+                cameraInst.autoFocus((success, camera) -> {
+                    if (success) {
+                        initCamera();//实现相机的参数初始化
                     }
                 });
             }
@@ -614,17 +608,14 @@ public class CameraActivity extends CameraBaseActivity {
     private void setUpPicSize(Camera.Parameters parameters) {
 
         if (adapterSize != null) {
-            return;
         } else {
             adapterSize = findBestPictureResolution();
-            return;
         }
     }
 
     private void setUpPreviewSize(Camera.Parameters parameters) {
 
         if (previewSize != null) {
-            return;
         } else {
             previewSize = findBestPreviewResolution();
         }
@@ -716,8 +707,7 @@ public class CameraActivity extends CameraBaseActivity {
 
         // 如果没有找到合适的，并且还有候选的像素，则设置其中最大比例的，对于配置比较低的机器不太合适
         if (!supportedPreviewResolutions.isEmpty()) {
-            Camera.Size largestPreview = supportedPreviewResolutions.get(0);
-            return largestPreview;
+            return supportedPreviewResolutions.get(0);
         }
 
         // 没有找到合适的，就返回默认的
@@ -777,7 +767,6 @@ public class CameraActivity extends CameraBaseActivity {
             double distortion = Math.abs(aspectRatio - screenAspectRatio);
             if (distortion > MAX_ASPECT_DISTORTION) {
                 it.remove();
-                continue;
             }
         }
 
@@ -805,9 +794,9 @@ public class CameraActivity extends CameraBaseActivity {
         Method downPolymorphic;
         try {
             downPolymorphic = camera.getClass().getMethod("setDisplayOrientation",
-                    new Class[]{int.class});
+                    int.class);
             if (downPolymorphic != null) {
-                downPolymorphic.invoke(camera, new Object[]{i});
+                downPolymorphic.invoke(camera, i);
             }
         } catch (Exception e) {
             Log.e("Came_e", "图像出错");
@@ -860,7 +849,7 @@ public class CameraActivity extends CameraBaseActivity {
 
             try {
                 croppedImage = decoder.decodeRegion(rect, new BitmapFactory.Options());
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
             }
         } catch (Throwable e) {
             e.printStackTrace();
