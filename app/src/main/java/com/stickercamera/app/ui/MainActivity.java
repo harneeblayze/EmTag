@@ -1,5 +1,7 @@
 package com.stickercamera.app.ui;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +32,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import chipset.potato.Potato;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -46,21 +49,37 @@ public class MainActivity extends BaseActivity {
     RecyclerView mRecyclerView;
     private List<FeedItem> feedList;
     private PictureAdapter mAdapter;
+    private ProgressDialog bar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        bar = new ProgressDialog(MainActivity.this);
         ButterKnife.inject(this);
         EventBus.getDefault().register(this);
         initView();
 
-        String str = DataUtils.getStringPreferences(App.getApp(), AppConstants.FEED_INFO);
-        if (StringUtils.isNotEmpty(str)) {
-            feedList = JSON.parseArray(str, FeedItem.class);
+
+        boolean logInRequired =
+                Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceBoolean(getString(R.string.pref_login));
+        if (logInRequired) {
+            if (bar.isShowing())
+                bar.hide();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
+        } else {
+            if (bar.isShowing())
+                bar.hide();
+            String str = DataUtils.getStringPreferences(App.getApp(), AppConstants.FEED_INFO);
+            if (StringUtils.isNotEmpty(str)) {
+                feedList = JSON.parseArray(str, FeedItem.class);
+            }
+            CameraManager.getInst().openCamera(MainActivity.this);
         }
-        CameraManager.getInst().openCamera(MainActivity.this);
 
     }
 
@@ -85,7 +104,8 @@ public class MainActivity extends BaseActivity {
     private void initView() {
         titleBar.hideLeftBtn();
         titleBar.hideRightBtn();
-
+        bar.setMessage("Loading...");
+        bar.show();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PictureAdapter();
         mRecyclerView.setAdapter(mAdapter);

@@ -3,7 +3,6 @@ package com.stickercamera.app.camera.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,8 +12,8 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +65,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import chipset.potato.Potato;
 import de.greenrobot.event.EventBus;
 import it.sephiroth.android.library.widget.HListView;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -130,8 +130,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         initEvent();
         initStickerToolBar();
         GPSTracker gps = new GPSTracker(this);
-        Context            mContext;
-
+        Context mContext;
 
 
         ImageUtils.asyncLoadImage(this, getIntent().getData(), new ImageUtils.LoadImageCallback() {
@@ -150,8 +149,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 smallImageBackgroud = result;
 
                 final MediaPlayer mp = new MediaPlayer();
-                if(mp.isPlaying())
-                {
+                if (mp.isPlaying()) {
                     mp.stop();
                 }
 
@@ -159,7 +157,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                     mp.reset();
                     AssetFileDescriptor afd;
                     afd = getAssets().openFd("thank-you.wav");
-                    mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+                    mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
                     mp.prepare();
                     mp.start();
                 } catch (IllegalStateException e) {
@@ -183,28 +181,27 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                         reqEntity.addPart("longitude", new StringBody(longitude_string));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        toast("\n" +"Error: "+e.toString(), Toast.LENGTH_LONG);
+                        toast("\n" + "Error: " + e.toString(), Toast.LENGTH_LONG);
                     }
-                    TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                    TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                     String uuid = tManager.getDeviceId();
-                    Long tsLong = System.currentTimeMillis()/1000;
+                    Long tsLong = System.currentTimeMillis() / 1000;
                     String ts = tsLong.toString();
 
-                    Thread thread = new Thread(new Runnable()
-                    {
+                    Thread thread = new Thread(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            try
-                            {
-
-                        reqEntity.addPart("user_firstName", new StringBody("EmTag"));
-                        reqEntity.addPart("user_lastName", new StringBody("App"));
-                        reqEntity.addPart("uuid", new StringBody(uuid));
-                        reqEntity.addPart("bounty_price", new StringBody("1"));
+                        public void run() {
+                            try {
+                                String fname = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_fname));
+                                String lname = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_lname));
+                                Log.d(fname, lname);
+                                reqEntity.addPart("user_firstName", new StringBody(fname));
+                                reqEntity.addPart("user_lastName", new StringBody(lname));
+                                reqEntity.addPart("uuid", new StringBody(uuid));
+                                reqEntity.addPart("bounty_price", new StringBody("1"));
                                 String fileName = null;
                                 try {
-                                    fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, smallImageBackgroud);
+                                    fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/" + picName, false, smallImageBackgroud);
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -213,32 +210,30 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                                             "Please exit the camera and try again", Toast.LENGTH_LONG);
                                 }
 
-                        //File file = new File(Bitmap);
-                        //ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        File file = new File(fileName);
-                        reqEntity.addPart("image", new FileBody(file, "image/jpeg"));
+                                //File file = new File(Bitmap);
+                                //ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                                File file = new File(fileName);
+                                reqEntity.addPart("image", new FileBody(file, "image/jpeg"));
 
-                        HttpClient httpClient = new DefaultHttpClient();
-                        HttpPost postRequest = new HttpPost(Utils.urlTagit);
+                                HttpClient httpClient = new DefaultHttpClient();
+                                HttpPost postRequest = new HttpPost(Utils.urlTagit);
 
-                        BasicHttpContext localContext = new BasicHttpContext();
+                                BasicHttpContext localContext = new BasicHttpContext();
 
-                        postRequest.setEntity(reqEntity);
+                                postRequest.setEntity(reqEntity);
 
-                        HttpResponse responses = httpClient.execute(postRequest,
-                                localContext);
+                                HttpResponse responses = httpClient.execute(postRequest,
+                                        localContext);
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                                responses.getEntity().getContent(), "UTF-8"));
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                                        responses.getEntity().getContent(), "UTF-8"));
 
-                        String sResponse;
-                        String response = "";
-                        while ((sResponse = reader.readLine()) != null) {
-                            response = response + sResponse;
-                        }
-                            }
-                            catch (Exception e)
-                            {
+                                String sResponse;
+                                String response = "";
+                                while ((sResponse = reader.readLine()) != null) {
+                                    response = response + sResponse;
+                                }
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -251,11 +246,9 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 }
 
 
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = settings.edit();
-                Integer number = Integer.parseInt(settings.getString("xp", "2"));
-                editor.putString("xp", Integer.toString(number+2));
-                editor.apply();
+                String xp = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_xp));
+                int _xp = Integer.parseInt(xp) + 2;
+                Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.key_xp), String.valueOf(_xp));
             }
         });
 
@@ -291,7 +284,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
         //初始化推荐标签栏
         commonLabelArea = LayoutInflater.from(PhotoProcessActivity.this).inflate(
-                R.layout.view_label_bottom,null);
+                R.layout.view_label_bottom, null);
         commonLabelArea.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         toolArea.addView(commonLabelArea);
@@ -299,7 +292,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
     }
 
     private void initEvent() {
-        stickerBtn.setOnClickListener(v ->{
+        stickerBtn.setOnClickListener(v -> {
             if (!setCurrentBtn(stickerBtn)) {
                 return;
             }
@@ -330,20 +323,20 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
         });
         labelSelector.setTxtClicked(v -> {
-            EditTextActivity.openTextEdit(PhotoProcessActivity.this,"",8, AppConstants.ACTION_EDIT_LABEL);
+            EditTextActivity.openTextEdit(PhotoProcessActivity.this, "", 8, AppConstants.ACTION_EDIT_LABEL);
         });
         labelSelector.setAddrClicked(v -> {
-            EditTextActivity.openTextEdit(PhotoProcessActivity.this,"",8, AppConstants.ACTION_EDIT_LABEL_POI);
+            EditTextActivity.openTextEdit(PhotoProcessActivity.this, "", 8, AppConstants.ACTION_EDIT_LABEL_POI);
 
         });
         mImageView.setOnDrawableEventListener(wpEditListener);
-        mImageView.setSingleTapListener(()->{
-                emptyLabelView.updateLocation((int) mImageView.getmLastMotionScrollX(),
-                        (int) mImageView.getmLastMotionScrollY());
-                emptyLabelView.setVisibility(View.VISIBLE);
+        mImageView.setSingleTapListener(() -> {
+            emptyLabelView.updateLocation((int) mImageView.getmLastMotionScrollX(),
+                    (int) mImageView.getmLastMotionScrollY());
+            emptyLabelView.setVisibility(View.VISIBLE);
 
-                labelSelector.showToTop();
-                drawArea.postInvalidate();
+            labelSelector.showToTop();
+            drawArea.postInvalidate();
         });
         labelSelector.setOnClickListener(v -> {
             labelSelector.hide();
@@ -359,7 +352,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
     }
 
     //保存图片
-    private void savePicture(){
+    private void savePicture() {
         //加滤镜
         final Bitmap newBitmap = Bitmap.createBitmap(mImageView.getWidth(), mImageView.getHeight(),
                 Bitmap.Config.ARGB_8888);
@@ -377,8 +370,9 @@ public class PhotoProcessActivity extends CameraBaseActivity {
         new SavePicToFileTask().execute(newBitmap);
     }
 
-    private class SavePicToFileTask extends AsyncTask<Bitmap,Void,String>{
+    private class SavePicToFileTask extends AsyncTask<Bitmap, Void, String> {
         Bitmap bitmap;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -392,7 +386,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                 bitmap = params[0];
 
                 String picName = TimeUtils.dtFormat(new Date(), "yyyyMMddHHmmss");
-                 fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/"+ picName, false, bitmap);
+                fileName = ImageUtils.saveToFile(FileUtils.getInst().getPhotoSavedPath() + "/" + picName, false, bitmap);
 
 
             } catch (Exception e) {
@@ -420,20 +414,20 @@ public class PhotoProcessActivity extends CameraBaseActivity {
             }
 
             //将图片信息通过EventBus发送到MainActivity
-            FeedItem feedItem = new FeedItem(tagInfoList,fileName);
+            FeedItem feedItem = new FeedItem(tagInfoList, fileName);
             EventBus.getDefault().post(feedItem);
             CameraManager.getInst().close();
         }
     }
 
 
-    public void tagClick(View v){
-        TextView textView = (TextView)v;
-        TagItem tagItem = new TagItem(AppConstants.POST_TYPE_TAG,textView.getText().toString());
+    public void tagClick(View v) {
+        TextView textView = (TextView) v;
+        TagItem tagItem = new TagItem(AppConstants.POST_TYPE_TAG, textView.getText().toString());
         addLabel(tagItem);
     }
 
-    private MyImageViewDrawableOverlay.OnDrawableEventListener wpEditListener   = new MyImageViewDrawableOverlay.OnDrawableEventListener() {
+    private MyImageViewDrawableOverlay.OnDrawableEventListener wpEditListener = new MyImageViewDrawableOverlay.OnDrawableEventListener() {
         @Override
         public void onMove(MyHighlightView view) {
         }
@@ -483,7 +477,7 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
 
     //初始化贴图
-    private void initStickerToolBar(){
+    private void initStickerToolBar() {
 
         bottomToolBar.setAdapter(new StickerToolAdapter(PhotoProcessActivity.this, EffectUtil.addonList));
         bottomToolBar.setOnItemClickListener(new it.sephiroth.android.library.widget.AdapterView.OnItemClickListener() {
@@ -507,9 +501,9 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
 
     //初始化滤镜
-    private void initFilterToolBar(){
+    private void initFilterToolBar() {
         final List<FilterEffect> filters = EffectService.getInst().getLocalFilters();
-        final FilterAdapter adapter = new FilterAdapter(PhotoProcessActivity.this, filters,smallImageBackgroud);
+        final FilterAdapter adapter = new FilterAdapter(PhotoProcessActivity.this, filters, smallImageBackgroud);
         bottomToolBar.setAdapter(adapter);
         bottomToolBar.setOnItemClickListener(new it.sephiroth.android.library.widget.AdapterView.OnItemClickListener() {
             @Override
@@ -554,16 +548,16 @@ public class PhotoProcessActivity extends CameraBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         labelSelector.hide();
         super.onActivityResult(requestCode, resultCode, data);
-        if (AppConstants.ACTION_EDIT_LABEL== requestCode && data != null) {
+        if (AppConstants.ACTION_EDIT_LABEL == requestCode && data != null) {
             String text = data.getStringExtra(AppConstants.PARAM_EDIT_TEXT);
-            if(StringUtils.isNotEmpty(text)){
-                TagItem tagItem = new TagItem(AppConstants.POST_TYPE_TAG,text);
+            if (StringUtils.isNotEmpty(text)) {
+                TagItem tagItem = new TagItem(AppConstants.POST_TYPE_TAG, text);
                 addLabel(tagItem);
             }
-        }else if(AppConstants.ACTION_EDIT_LABEL_POI== requestCode && data != null){
+        } else if (AppConstants.ACTION_EDIT_LABEL_POI == requestCode && data != null) {
             String text = data.getStringExtra(AppConstants.PARAM_EDIT_TEXT);
-            if(StringUtils.isNotEmpty(text)){
-                TagItem tagItem = new TagItem(AppConstants.POST_TYPE_POI,text);
+            if (StringUtils.isNotEmpty(text)) {
+                TagItem tagItem = new TagItem(AppConstants.POST_TYPE_POI, text);
                 addLabel(tagItem);
             }
         }
