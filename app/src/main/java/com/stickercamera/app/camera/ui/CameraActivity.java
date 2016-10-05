@@ -2,7 +2,6 @@ package com.stickercamera.app.camera.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,8 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -46,6 +43,7 @@ import com.stickercamera.app.camera.CameraBaseActivity;
 import com.stickercamera.app.camera.CameraManager;
 import com.stickercamera.app.camera.util.CameraHelper;
 import com.stickercamera.app.model.PhotoItem;
+import com.stickercamera.app.ui.LoginActivity;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -59,6 +57,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import chipset.potato.Potato;
 
 /**
  * 相机界面
@@ -98,6 +97,8 @@ public class CameraActivity extends CameraBaseActivity {
     Button takePicture3;
     @InjectView(R.id.takepicture4)
     Button takePicture4;
+    @InjectView(R.id.logout)
+    Button logout;
     @InjectView(R.id.flashBtn)
     ImageView flashBtn;
     @InjectView(R.id.change)
@@ -130,14 +131,23 @@ public class CameraActivity extends CameraBaseActivity {
         surfaceView.setBackgroundColor(TRIM_MEMORY_BACKGROUND);
         surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = settings.edit();
+        logout.setOnClickListener(v -> {
+            Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.pref_login), true);
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_xp));
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_emrals));
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_username));
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_picture));
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_fname));
+            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_lname));
+            startActivity(new Intent(CameraActivity.this, LoginActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        });
 
         //LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         //View convertView = layoutInflater.inflate(R.layout.item_bottom_filter, null);
         TextView tv = (TextView) findViewById(R.id.xp);
-        tv.setText(settings.getString("xp", "2"));
-
+        String xp = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_xp));
+        tv.setText(xp);
 
 
         //设置相机界面,照片列表,以及拍照布局的高度(保证相机预览为正方形)
@@ -186,8 +196,7 @@ public class CameraActivity extends CameraBaseActivity {
         final MediaPlayer mp = new MediaPlayer();
 
         photo.setOnClickListener(v -> {
-            if(mp.isPlaying())
-            {
+            if (mp.isPlaying()) {
                 mp.stop();
             }
 
@@ -195,7 +204,7 @@ public class CameraActivity extends CameraBaseActivity {
                 mp.reset();
                 AssetFileDescriptor afd;
                 afd = getAssets().openFd("thank-you.wav");
-                mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+                mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
                 mp.prepare();
                 mp.start();
             } catch (IllegalStateException | IOException e) {
@@ -446,9 +455,11 @@ public class CameraActivity extends CameraBaseActivity {
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
     }
 
-    private final class MyPictureCallback implements Camera.PictureCallback{
+    private final class MyPictureCallback implements Camera.PictureCallback {
 
-        public MyPictureCallback(Integer type){}
+        public MyPictureCallback(Integer type) {
+        }
+
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 //            final MediaPlayer mp = new MediaPlayer();
