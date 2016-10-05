@@ -194,6 +194,8 @@ public class PhotoProcessActivity extends CameraBaseActivity {
                             try {
                                 String fname = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_fname));
                                 String lname = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_lname));
+                                fname = fname.equals("null") ? "EmTag" : fname;
+                                lname = lname.equals("null") ? "App" : lname;
                                 Log.d(fname, lname);
                                 reqEntity.addPart("user_firstName", new StringBody(fname));
                                 reqEntity.addPart("user_lastName", new StringBody(lname));
@@ -247,8 +249,10 @@ public class PhotoProcessActivity extends CameraBaseActivity {
 
 
                 String xp = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_xp));
-                int _xp = Integer.parseInt(xp) + 2;
-                Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.key_xp), String.valueOf(_xp));
+                if (!xp.equals("null")) {
+                    int _xp = Integer.parseInt(xp) + 2;
+                    Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.key_xp), String.valueOf(_xp));
+                }
             }
         });
 
