@@ -15,8 +15,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -97,8 +100,6 @@ public class CameraActivity extends CameraBaseActivity {
     Button takePicture3;
     @InjectView(R.id.takepicture4)
     Button takePicture4;
-    @InjectView(R.id.logout)
-    Button logout;
     @InjectView(R.id.flashBtn)
     ImageView flashBtn;
     @InjectView(R.id.change)
@@ -111,6 +112,8 @@ public class CameraActivity extends CameraBaseActivity {
     View focusIndex;
     @InjectView(R.id.surfaceView)
     SurfaceView surfaceView;
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
 
 
     @Override
@@ -131,23 +134,14 @@ public class CameraActivity extends CameraBaseActivity {
         surfaceView.setBackgroundColor(TRIM_MEMORY_BACKGROUND);
         surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
 
-        logout.setOnClickListener(v -> {
-            Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.pref_login), true);
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_xp));
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_emrals));
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_username));
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_picture));
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_fname));
-            Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_lname));
-            startActivity(new Intent(CameraActivity.this, LoginActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        });
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
 
         //LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         //View convertView = layoutInflater.inflate(R.layout.item_bottom_filter, null);
         TextView tv = (TextView) findViewById(R.id.xp);
         String xp = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceString(getString(R.string.key_xp));
-        tv.setText(xp);
+        tv.setText(xp.equals("null") ? "1" : xp);
 
 
         //设置相机界面,照片列表,以及拍照布局的高度(保证相机预览为正方形)
@@ -960,5 +954,36 @@ public class CameraActivity extends CameraBaseActivity {
             e.printStackTrace();
         }
         return c;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        boolean login = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceBoolean(getString(R.string.pref_login));
+        if (!login)
+            menu.getItem(0).setTitle(getString(R.string.logout));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_login_logout) {
+            boolean login = Potato.potate(getApplicationContext()).Preferences().getSharedPreferenceBoolean(getString(R.string.pref_login));
+            if (login) {
+                startActivity(new Intent(CameraActivity.this, LoginActivity.class));
+            } else {
+                Potato.potate(getApplicationContext()).Preferences().putSharedPreference(getString(R.string.pref_login), true);
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_xp));
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_emrals));
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_username));
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_picture));
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_fname));
+                Utils.removeSharedPreference(getApplicationContext(), getString(R.string.key_lname));
+                item.setTitle(getString(R.string.login));
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

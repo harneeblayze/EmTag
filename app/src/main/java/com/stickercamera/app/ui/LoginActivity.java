@@ -1,5 +1,6 @@
 package com.stickercamera.app.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -65,12 +66,18 @@ public class LoginActivity extends BaseActivity {
             }
 
             if (!username.isEmpty() && !password.isEmpty()) {
+                ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
+                dialog.setMessage("Please wait...");
+                dialog.show();
                 RestAdapter adapter = new RestAdapter.Builder().setEndpoint(Utils.urlLogin).build();
                 LoginInterface loginInterface = adapter.create(LoginInterface.class);
 
                 loginInterface.login(username, password, new ResponseCallback() {
                     @Override
                     public void success(Response response) {
+                        if (dialog.isShowing()) {
+                            dialog.hide();
+                        }
                         BufferedReader reader;
                         StringBuilder sb = new StringBuilder();
                         try {
@@ -117,6 +124,10 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void failure(RetrofitError error) {
+                        if (dialog.isShowing()) {
+                            dialog.hide();
+                        }
+                        Toast.makeText(LoginActivity.this, "Something went wrong, please try again", Toast.LENGTH_SHORT).show();
                         error.printStackTrace();
                     }
                 });
