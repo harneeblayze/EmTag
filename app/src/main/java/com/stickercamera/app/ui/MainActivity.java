@@ -137,7 +137,6 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onViewAttachedToWindow(ViewHolder holder) {
             super.onViewAttachedToWindow(holder);
-            // 这里可能有问题 延迟200毫秒加载是为了等pictureLayout已经在屏幕上显示getWidth才为具体的值
             holder.pictureLayout.getHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

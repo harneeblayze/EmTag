@@ -10,8 +10,8 @@ import java.io.OutputStream;
 public class Utils {
 
     public static Bitmap photo;
-    public static String urlTagit = "http://www.emrals.com/api/add_alert/";
-    public static String urlLogin = "http://www.emrals.com";
+    public static String urlTagit = "https://emrals.herokuapp.com/api/add_alert/";
+    public static String urlLogin = "https://emrals.herokuapp.com";
     public static int loginCheck = 0;
     public static String imgPath = "";
 

@@ -94,7 +94,7 @@ public class LoginActivity extends BaseActivity {
                             e.printStackTrace();
                         }
                         final String result = sb.toString();
-                        if (result.contains("lease enter a correct username and password")) {
+                        if (result.contains("please enter a correct username and password")) {
                             Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
                             passwordEditText.setText("");
                             usernameEditText.setText("");
@@ -127,7 +127,7 @@ public class LoginActivity extends BaseActivity {
                         if (dialog.isShowing()) {
                             dialog.hide();
                         }
-                        Toast.makeText(LoginActivity.this, "Something went wrong, please try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                         error.printStackTrace();
                     }
                 });
